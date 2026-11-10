@@ -126,13 +126,11 @@ The design rationale behind TreeQuest is documented in two companion documents, 
 
 | Name | Role | GitHub |
 | --- | --- | --- |
-| [Name] | Product Owner | [@username](https://github.com/) |
-| [Name] | Scrum Master | [@username](https://github.com/) |
-| [Name] | Instructional design lead | [@username](https://github.com/) |
-| [Name] | Front-end developer | [@username](https://github.com/) |
-| [Name] | Front-end developer | [@username](https://github.com/) |
-| Tshwanelo Ntjana | [Role] | [@TshwaneloNtjana](https://github.com/TshwaneloNtjana) |
-| [Name] | QA / usability lead | [@username](https://github.com/) |
+| Melisa Ledwaba | Developer | [@Melissa941](https://github.com/Melissa941) |
+| [Name] | Developer | [@username](https://github.com/) |
+| [Name] | Developer | [@username](https://github.com/) |
+| [Name] | Developer | [@username](https://github.com/) |
+| Tshwanelo Ntjana | Developer | [@TshwaneloNtjana](https://github.com/TshwaneloNtjana) |
 
 ## 🤖 Use of generative AI
 

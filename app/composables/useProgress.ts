@@ -1,129 +1,141 @@
-// app/composables/useProgress.ts
-// Single source of truth for the student's progress.
-// Saved to localStorage only (no personal data leaves the device – NFR4 in the SE doc).
+// Everything the student does: visited lessons, quiz attempts and notes.
+// Saved in localStorage only; no personal data leaves the device.
+import type { AnswerValue, Question, Quiz } from '~/types/content'
 
-export type StepKey =
-    | 'home' | 'diagnostic' | 'trees' | 'bst' | 'traversals' | 'practice' | 'quiz' | 'summary'
-
-export interface Step {
-    key: StepKey
-    label: string     // shown in the side menu
-    short: string     // used in sentences, e.g. "Lesson 3 is next"
-    to: string        // route
-    minutes: number   // rough time estimate
+export interface Attempt {
+  id: string
+  quizId: string
+  at: string // ISO date
+  score: number
+  total: number
+  percent: number
+  seconds: number
+  answers: Record<string, AnswerValue>
 }
 
-export type ConceptKey = 'terms' | 'bstProperty' | 'bstSearch' | 'bfs' | 'dfs'
-
-export const STEPS: Step[] = [
-    { key: 'home',       label: 'Overview',                 short: 'Overview',        to: '/',                   minutes: 0 },
-    { key: 'diagnostic', label: 'Diagnostic quiz',          short: 'The diagnostic quiz', to: '/diagnostic',     minutes: 5 },
-    { key: 'trees',      label: '1 · What is a tree?',      short: 'Lesson 1',        to: '/lessons/trees',      minutes: 8 },
-    { key: 'bst',        label: '2 · Binary search trees',  short: 'Lesson 2',        to: '/lessons/bst',        minutes: 12 },
-    { key: 'traversals', label: '3 · Traversals',           short: 'Lesson 3',        to: '/lessons/traversals', minutes: 15 },
-    { key: 'practice',   label: 'Practice',                 short: 'Practice',        to: '/practice',           minutes: 5 },
-    { key: 'quiz',       label: 'Mastery quiz',             short: 'The mastery quiz', to: '/quiz',              minutes: 8 },
-    { key: 'summary',    label: 'Summary',                  short: 'The summary',     to: '/summary',            minutes: 2 },
-]
-
-export const CONCEPTS: { key: ConceptKey; label: string }[] = [
-    { key: 'terms',       label: 'Tree terminology' },
-    { key: 'bstProperty', label: 'BST property' },
-    { key: 'bstSearch',   label: 'BST insert and search' },
-    { key: 'bfs',         label: 'BFS (level order)' },
-    { key: 'dfs',         label: 'DFS (pre-, in-, post-order)' },
-]
-
-export const MASTERY_THRESHOLD = 70
-
-interface SavedProgress {
-    completed: StepKey[]
-    mastery: Record<ConceptKey, number | null>
-    path: 'standard' | 'supported'
-    notes: string
-    bfsStreak: number
+export interface Note {
+  id: string
+  text: string
+  topic: string
+  createdAt: string
+  done: boolean
 }
 
-const STORAGE_KEY = 'treequest-progress-v1'
-
-// Demo data so the home page has something to show while you build.
-// Change to the commented-out values for a real first visit.
-function defaults(): SavedProgress {
-    return {
-        completed: ['diagnostic', 'trees', 'bst'],          // []
-        mastery: { terms: 90, bstProperty: 80, bstSearch: 65, bfs: null, dfs: null }, // all null
-        path: 'standard',
-        notes: 'Why does a BST get slow if I insert the values already sorted?', // ''
-        bfsStreak: 0,
-    }
+interface Saved {
+  visited: string[] // lesson slugs
+  attempts: Attempt[]
+  notes: Note[]
 }
 
+const STORAGE_KEY = 'treequest-v2'
+const empty = (): Saved => ({ visited: [], attempts: [], notes: [] })
 let loaded = false
 
+export const newId = () => `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`
+
+export function isCorrect(q: Question, a: AnswerValue | undefined) {
+  if (a == null) return false
+  if (q.type === 'mcq') return a === q.answer
+  return Array.isArray(a) && a.length === q.answer.length && a.every((v, i) => v === q.answer[i])
+}
+
+export function answerText(q: Question, a: AnswerValue | undefined) {
+  if (a == null || (Array.isArray(a) && a.length === 0)) return 'No answer'
+  if (q.type === 'mcq') return q.options.find(o => o.id === a)?.text ?? String(a)
+  return (a as number[]).join(', ')
+}
+
+export function correctText(q: Question) {
+  return q.type === 'mcq' ? (q.options.find(o => o.id === q.answer)?.text ?? '') : q.answer.join(', ')
+}
+
 export function useProgress() {
-    const state = useState<SavedProgress>('tq-progress', defaults)
+  const state = useState<Saved>('tq-progress', empty)
 
-    // Load once from localStorage, then save on every change.
-    if (import.meta.client && !loaded) {
-        loaded = true
-        try {
-            const raw = localStorage.getItem(STORAGE_KEY)
-            if (raw) state.value = { ...defaults(), ...JSON.parse(raw) }
-        } catch { /* storage blocked or corrupt: keep defaults */ }
-        watch(state, (v) => {
-            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(v)) } catch { /* ignore */ }
-        }, { deep: true })
+  if (import.meta.client && !loaded) {
+    loaded = true
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY)
+      if (raw) state.value = { ...empty(), ...JSON.parse(raw) }
+    } catch { /* storage blocked or corrupt: start fresh */ }
+    watch(state, (v) => {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(v)) } catch { /* ignore */ }
+    }, { deep: true })
+  }
+
+  const { lessons, quizzes } = useContent()
+
+  // ---- Quiz attempts ----
+  const attemptsFor = (quizId: string) =>
+    state.value.attempts.filter(a => a.quizId === quizId).sort((a, b) => b.at.localeCompare(a.at))
+  const bestFor = (quizId: string) => {
+    const list = attemptsFor(quizId)
+    return list.length ? Math.max(...list.map(a => a.percent)) : null
+  }
+  const recentAttempts = computed(() => [...state.value.attempts].sort((a, b) => b.at.localeCompare(a.at)))
+
+  function recordAttempt(quiz: Quiz, answers: Record<string, AnswerValue>, seconds: number) {
+    const score = quiz.questions.filter(q => isCorrect(q, answers[q.id])).length
+    const total = quiz.questions.length
+    const attempt: Attempt = {
+      id: newId(), quizId: quiz.id, at: new Date().toISOString(),
+      score, total, percent: Math.round((score / total) * 100), seconds,
+      answers: JSON.parse(JSON.stringify(answers)),
     }
+    state.value.attempts.push(attempt)
+    return attempt
+  }
 
-    const learningSteps = STEPS.filter(s => s.key !== 'home')
+  // ---- Lessons ----
+  function markVisited(slug: string) {
+    if (!state.value.visited.includes(slug)) state.value.visited.push(slug)
+  }
+  const lessonStatus = (slug: string): 'done' | 'started' | 'new' => {
+    const quiz = lessons.find(l => l.slug === slug)?.quizId
+    if (quiz && attemptsFor(quiz).length) return 'done'
+    return state.value.visited.includes(slug) ? 'started' : 'new'
+  }
+  const lessonsDone = computed(() => lessons.filter(l => lessonStatus(l.slug) === 'done').length)
+  const nextLesson = computed(() => lessons.find(l => lessonStatus(l.slug) !== 'done') ?? null)
+  const allLessonsDone = computed(() => lessonsDone.value === lessons.length)
 
-    const steps = computed(() =>
-        STEPS.map((s, i) => ({ ...s, num: i, done: state.value.completed.includes(s.key) })),
-    )
+  const isLocked = (quiz: Quiz) => quiz.kind === 'final' && !allLessonsDone.value
 
-    const doneCount = computed(() => learningSteps.filter(s => state.value.completed.includes(s.key)).length)
-    const totalSteps = learningSteps.length
-    const overallPercent = computed(() => Math.round((doneCount.value / totalSteps) * 100))
-    const nextStep = computed(() => learningSteps.find(s => !state.value.completed.includes(s.key)) ?? null)
-    const lastDoneStep = computed(() => [...learningSteps].reverse().find(s => state.value.completed.includes(s.key)) ?? null)
-    const timeLeft = computed(() =>
-        learningSteps.filter(s => !state.value.completed.includes(s.key)).reduce((t, s) => t + s.minutes, 0),
-    )
+  const overallPercent = computed(() => {
+    const finalDone = quizzes.some(q => q.kind === 'final' && attemptsFor(q.id).length) ? 1 : 0
+    return Math.round(((lessonsDone.value + finalDone) / (lessons.length + 1)) * 100)
+  })
 
-    const concepts = computed(() =>
-        CONCEPTS.map((c) => {
-            const score = state.value.mastery[c.key]
-            const status = score == null ? 'none' : score >= MASTERY_THRESHOLD ? 'mastered' : 'practising'
-            return { ...c, score, status } as const
-        }),
-    )
+  const quizzesAttempted = computed(() => quizzes.filter(q => attemptsFor(q.id).length).length)
+  const averageBest = computed(() => {
+    const bests = quizzes.map(q => bestFor(q.id)).filter((b): b is number => b != null)
+    return bests.length ? Math.round(bests.reduce((s, b) => s + b, 0) / bests.length) : null
+  })
 
-    const badges = computed(() => {
-        const m = state.value.mastery
-        return [
-            { key: 'root', name: 'Root Explorer', how: 'Finish Lesson 1', earned: state.value.completed.includes('trees') },
-            { key: 'queue', name: 'Queue Master', how: 'Predict 5 BFS steps in a row', earned: state.value.bfsStreak >= 5 },
-            { key: 'pro', name: 'Traversal Pro', how: 'Master BFS and DFS',
-                earned: (m.bfs ?? 0) >= MASTERY_THRESHOLD && (m.dfs ?? 0) >= MASTERY_THRESHOLD },
-        ]
-    })
+  // ---- Notes ----
+  const notes = computed(() => [...state.value.notes].sort((a, b) => b.createdAt.localeCompare(a.createdAt)))
+  const openNotes = computed(() => notes.value.filter(n => !n.done))
+  function addNote(text: string, topic: string) {
+    state.value.notes.push({ id: newId(), text: text.trim(), topic, createdAt: new Date().toISOString(), done: false })
+  }
+  function toggleNote(id: string) {
+    const n = state.value.notes.find(x => x.id === id)
+    if (n) n.done = !n.done
+  }
+  function deleteNote(id: string) {
+    state.value.notes = state.value.notes.filter(x => x.id !== id)
+  }
 
-    function completeStep(key: StepKey) {
-        if (!state.value.completed.includes(key)) state.value.completed.push(key)
-    }
-    function setMastery(key: ConceptKey, score: number) {
-        state.value.mastery[key] = Math.max(0, Math.min(100, Math.round(score)))
-    }
-    function resetProgress() {
-        state.value = { completed: [], mastery: { terms: null, bstProperty: null, bstSearch: null, bfs: null, dfs: null }, path: 'standard', notes: '', bfsStreak: 0 }
-    }
+  function resetProgress() {
+    state.value = empty()
+  }
 
-    return {
-        state,
-        steps, doneCount, totalSteps, overallPercent, nextStep, lastDoneStep, timeLeft,
-        concepts, badges,
-        path: computed(() => state.value.path),
-        notes: computed({ get: () => state.value.notes, set: v => { state.value.notes = v } }),
-        completeStep, setMastery, resetProgress,
-    }
+  return {
+    state,
+    attemptsFor, bestFor, recentAttempts, recordAttempt,
+    markVisited, lessonStatus, lessonsDone, nextLesson, allLessonsDone, isLocked,
+    overallPercent, quizzesAttempted, averageBest,
+    notes, openNotes, addNote, toggleNote, deleteNote,
+    resetProgress,
+  }
 }

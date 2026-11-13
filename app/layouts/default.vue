@@ -1,41 +1,33 @@
-<!-- app/layouts/default.vue
-     Shared shell for every page: yellow app bar + "Your path" side menu. -->
+<!-- Shared shell: yellow app bar + side menu (Dashboard, Lessons, Quizzes, Summary, Notes). -->
 <script setup lang="ts">
-const { steps, overallPercent } = useProgress()
+const { lessons } = useContent()
+const { overallPercent, lessonStatus, lessonsDone, openNotes } = useProgress()
 const route = useRoute()
 
-// null = let Vuetify decide: open on desktop, closed (hamburger) on phones
-const drawer = ref<boolean | null>(null)
+const drawer = ref<boolean | null>(null) // null: open on desktop, hamburger on phones
+const lessonsOpen = ref(['lessons'])
 
-const isCurrent = (to: string) => route.path === to
+const lessonIcon = (slug: string) => {
+  const s = lessonStatus(slug)
+  return s === 'done' ? 'mdi-check-circle' : s === 'started' ? 'mdi-record-circle-outline' : 'mdi-circle-outline'
+}
 </script>
 
 <template>
   <v-app>
     <v-app-bar color="primary" flat>
-      <v-app-bar-nav-icon
-        class="d-lg-none"
-        aria-label="Open lesson path"
-        @click="drawer = !drawer"
-      />
+      <v-app-bar-nav-icon class="d-lg-none" aria-label="Open menu" @click="drawer = !drawer" />
 
-      <NuxtLink
-        to="/"
-        class="flex items-center gap-2 ml-4 text-inherit no-underline"
-        aria-label="TreeQuest home"
-      >
+      <NuxtLink to="/" class="flex items-center gap-2 ml-4 text-inherit no-underline" aria-label="TreeQuest dashboard">
         <v-icon icon="mdi-file-tree" size="28" />
-        <span class="text-xl font-medium">TreeQuest</span>
+        <span class="text-xl font-bold">TreeQuest</span>
       </NuxtLink>
-
-      <span class="hidden md:inline ml-4 text-sm opacity-80 whitespace-nowrap">
-        COS 212 · Trees and traversals
-      </span>
+      <span class="hidden md:inline ml-4 text-sm text-[#4A3D10] whitespace-nowrap">COS 212 · Trees and traversals</span>
 
       <v-spacer />
 
       <div class="hidden sm:flex items-center gap-3 mr-2">
-        <span class="text-sm whitespace-nowrap">{{ overallPercent }}% done</span>
+        <span class="text-sm font-medium whitespace-nowrap">{{ overallPercent }}% done</span>
         <v-progress-linear
           :model-value="overallPercent"
           color="on-primary"
@@ -43,59 +35,71 @@ const isCurrent = (to: string) => route.path === to
           :bg-opacity="0.15"
           height="6"
           rounded
-          class="!w-36"
+          class="w-36"
           aria-label="Overall progress"
         />
       </div>
-
-      <v-btn icon="mdi-help-circle-outline" aria-label="Help" />
+      <v-btn icon="mdi-note-text-outline" to="/notes" aria-label="My notes" />
     </v-app-bar>
 
     <v-navigation-drawer v-model="drawer" width="280">
-      <div class="px-5 pt-5 pb-2 text-xs font-medium tracking-widest uppercase text-gray-600">
-        Your path
-      </div>
+      <v-list v-model:opened="lessonsOpen" nav density="comfortable" class="px-3 pt-4" color="on-primary" active-class="bg-primary">
+        <v-list-item to="/" exact prepend-icon="mdi-view-dashboard-outline" title="Dashboard" rounded="xl" />
 
-      <v-list nav density="comfortable" class="px-3">
-        <v-list-item
-          v-for="s in steps"
-          :key="s.key"
-          :to="s.to"
-          :title="s.label"
-          exact
-          rounded="xl"
-          color="primary-darken-1"
-          :aria-current="isCurrent(s.to) ? 'page' : undefined"
-        >
-          <template #prepend>
-            <div class="w-7 mr-3 flex justify-center">
-              <v-icon v-if="s.key === 'home'" icon="mdi-home-outline" />
-              <v-icon v-else-if="isCurrent(s.to)" icon="mdi-record-circle-outline" color="primary-darken-1" />
-              <v-icon v-else-if="s.done" icon="mdi-check-circle" color="success" />
-              <span
-                v-else
-                class="w-[22px] h-[22px] rounded-full border-[1.5px] border-gray-500 text-xs text-gray-600 flex items-center justify-center"
-              >{{ s.num }}</span>
-            </div>
+        <v-list-group value="lessons">
+          <template #activator="{ props }">
+            <v-list-item
+              v-bind="props"
+              prepend-icon="mdi-book-open-variant-outline"
+              title="Lessons"
+              rounded="xl"
+              :active="route.path.startsWith('/lessons')"
+            >
+              <template #append>
+                <span class="text-xs text-tq-muted mr-1">{{ lessonsDone }} of {{ lessons.length }}</span>
+              </template>
+            </v-list-item>
           </template>
-          <template v-if="s.done && !isCurrent(s.to)" #append>
-            <span class="text-xs text-tq-gold">Done</span>
+          <v-list-item
+            v-for="l in lessons"
+            :key="l.slug"
+            :to="`/lessons/${l.slug}`"
+            :title="`${l.number} · ${l.title.split(':')[0]}`"
+            rounded="xl"
+            density="compact"
+          >
+            <template #prepend>
+              <v-icon
+                :icon="lessonIcon(l.slug)"
+                :color="lessonStatus(l.slug) === 'done' ? 'success' : 'primary-darken-1'"
+                size="20"
+              />
+            </template>
+          </v-list-item>
+        </v-list-group>
+
+        <v-list-item to="/quizzes" prepend-icon="mdi-clipboard-check-outline" title="Quizzes" rounded="xl" />
+        <v-list-item to="/summary" prepend-icon="mdi-text-box-outline" title="Summary" rounded="xl" />
+        <v-list-item to="/notes" prepend-icon="mdi-note-text-outline" title="Notes" rounded="xl">
+          <template v-if="openNotes.length" #append>
+            <span class="text-xs text-tq-muted">{{ openNotes.length }} open</span>
           </template>
         </v-list-item>
       </v-list>
 
       <template #append>
-        <div class="m-4 p-4 rounded-xl bg-tq-bg">
-          <div class="text-sm font-medium">Stuck on something?</div>
-          <div class="text-[13px] text-gray-600 mt-1 leading-snug">
-            Add it to your lecture notes and bring it to class.
-          </div>
+        <div class="m-4 p-4 rounded-xl bg-tq-yellow-light">
+          <div class="text-sm font-medium">Confused by something?</div>
+          <div class="text-[13px] text-[#4A3D10] mt-1 leading-snug">Write it in Notes and bring it to class.</div>
+          <NuxtLink to="/notes" class="inline-block mt-2.5 text-sm font-medium text-tq-gold">Add a note →</NuxtLink>
         </div>
       </template>
     </v-navigation-drawer>
 
     <v-main class="bg-background">
-      <slot />
+      <div class="mx-auto px-4 py-6 sm:px-8 sm:py-8">
+        <slot />
+      </div>
     </v-main>
   </v-app>
 </template>

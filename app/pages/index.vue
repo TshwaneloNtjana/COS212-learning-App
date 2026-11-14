@@ -1,6 +1,6 @@
 <!-- Dashboard -->
 <script setup lang="ts">
-useHead({ title: 'Dashboard · TreeQuest' })
+useHead({ title: 'Dashboard · MainFrame' })
 
 const { lessons, quizzes, getQuiz } = useContent()
 const {
@@ -12,7 +12,7 @@ const started = computed(() => lessons.some(l => lessonStatus(l.slug) !== 'new')
 
 const heading = computed(() => {
   if (!nextLesson.value) return 'You’re ready for the lecture.'
-  if (!started.value) return 'Welcome to TreeQuest.'
+  if (!started.value) return 'Welcome to MainFrame.'
   return `Welcome back. Lesson ${nextLesson.value.number} is next.`
 })
 

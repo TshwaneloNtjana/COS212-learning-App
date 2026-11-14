@@ -11,7 +11,7 @@ if (!quiz.value) {
 const lesson = computed(() => (quiz.value ? lessonForQuiz(quiz.value) : undefined))
 const locked = computed(() => (quiz.value ? isLocked(quiz.value) : true))
 
-useHead(() => ({ title: `${quiz.value?.title} · TreeQuest` }))
+useHead(() => ({ title: `${quiz.value?.title} · MainFrame` }))
 </script>
 
 <template>

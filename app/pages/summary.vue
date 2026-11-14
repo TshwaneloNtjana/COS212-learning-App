@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import type { Order } from '~/utils/bst'
 
-useHead({ title: 'Summary · TreeQuest' })
+useHead({ title: 'Summary · MainFrame' })
 
 const { lessons } = useContent()
 const { lessonStatus, bestFor } = useProgress()

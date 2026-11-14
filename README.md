@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🌳 TreeQuest
+# 🌳 MainFrame
 
 ### An interactive pre-lecture tutor for binary search trees, BFS and DFS
 
@@ -21,7 +21,7 @@
 
 ## 📖 About
 
-**TreeQuest** gives COS 212 students a tutor-style session *before* their lecture on trees. It assumes no prior knowledge. Students learn what a binary search tree (BST) is, then watch, step through and predict how **breadth-first search (BFS)** and **depth-first search (DFS)** walk through one.
+**MainFrame** gives COS 212 students a tutor-style session *before* their lecture on trees. It assumes no prior knowledge. Students learn what a binary search tree (BST) is, then watch, step through and predict how **breadth-first search (BFS)** and **depth-first search (DFS)** walk through one.
 
 A short diagnostic quiz places each student on the right path. A mastery quiz at the end checks understanding. Students who score below 70% on a concept get extra scaffolding (hints, worked examples and faded examples) before they retry. Anything still unclear goes into their notes to bring to the lecture.
 
@@ -29,7 +29,7 @@ The project was built for the **COS 750 – Educational Software Development** e
 
 <!-- Replace with a real screenshot or GIF: save it to docs/screenshots/ and update the path -->
 <div align="center">
-  <img src="docs/screenshots/home.png" alt="TreeQuest home page showing progress, concept mastery and badges" width="800">
+  <img src="docs/screenshots/home.png" alt="MainFrame home page showing progress, concept mastery and badges" width="800">
 </div>
 
 ## ✨ Features
@@ -50,7 +50,7 @@ The project was built for the **COS 750 – Educational Software Development** e
 
 ## 🎓 Curriculum alignment
 
-TreeQuest covers these core topics from the ACM/IEEE **CS2023** Algorithmic Foundations knowledge area:
+MainFrame covers these core topics from the ACM/IEEE **CS2023** Algorithmic Foundations knowledge area:
 
 - **AL-Foundational 9:** Trees (binary, n-ary and search trees)
 - **AL-Foundational 11c:** Depth- and breadth-first tree search
@@ -95,7 +95,7 @@ npm run dev
 ```
 app/
 ├── app.vue                  # Root: wraps pages in the layout
-├── assets/css/main.css      # Tailwind imports and TreeQuest colours
+├── assets/css/main.css      # Tailwind imports and MainFrame colours
 ├── composables/
 │   └── useProgress.ts       # Progress, mastery, badges and notes (saved locally)
 ├── layouts/
@@ -115,7 +115,7 @@ nuxt.config.ts               # Vuetify theme, Tailwind plugin, SPA mode
 
 ## 📄 Documentation
 
-The design rationale behind TreeQuest is documented in two companion documents, submitted on ClickUP:
+The design rationale behind MainFrame is documented in two companion documents, submitted on ClickUP:
 
 - **Software Engineering document:** Agile Scrum approach, requirements, architecture and testing
 - **Instructional Design document:** ADDIE and Gagné's Nine Events, learning objectives, learning theories, motivation (ARCS) and assessment design

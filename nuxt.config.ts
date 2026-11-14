@@ -23,9 +23,9 @@ export default defineNuxtConfig({
     vuetifyOptions: {
       icons: { defaultSet: 'mdi' },
       theme: {
-        defaultTheme: 'treequest',
+        defaultTheme: 'mainframe',
         themes: {
-          treequest: {
+          mainframe: {
             dark: false,
             colors: {
               primary: '#F2B807',            // yellow: app bar, main buttons, current node

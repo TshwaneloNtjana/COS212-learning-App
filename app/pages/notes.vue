@@ -1,6 +1,6 @@
 <!-- Notes for class: questions to ask or bring up in the lecture. -->
 <script setup lang="ts">
-useHead({ title: 'Notes · TreeQuest' })
+useHead({ title: 'Notes · MainFrame' })
 
 const route = useRoute()
 const { lessons } = useContent()
@@ -39,11 +39,11 @@ async function copy() {
 }
 
 function download() {
-  const blob = new Blob([`TreeQuest: questions for class\n\n${asText()}\n`], { type: 'text/plain' })
+  const blob = new Blob([`MainFrame: questions for class\n\n${asText()}\n`], { type: 'text/plain' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = 'treequest-questions.txt'
+  a.download = 'MainFrame-questions.txt'
   a.click()
   URL.revokeObjectURL(url)
 }

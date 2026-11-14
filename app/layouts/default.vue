@@ -18,9 +18,9 @@ const lessonIcon = (slug: string) => {
     <v-app-bar color="primary" flat>
       <v-app-bar-nav-icon class="d-lg-none" aria-label="Open menu" @click="drawer = !drawer" />
 
-      <NuxtLink to="/" class="flex items-center gap-2 ml-4 text-inherit no-underline" aria-label="TreeQuest dashboard">
+      <NuxtLink to="/" class="flex items-center gap-2 ml-4 text-inherit no-underline" aria-label="MainFrame dashboard">
         <v-icon icon="mdi-file-tree" size="28" />
-        <span class="text-xl font-bold">TreeQuest</span>
+        <span class="text-xl font-bold">MainFrame</span>
       </NuxtLink>
       <span class="hidden md:inline ml-4 text-sm text-[#4A3D10] whitespace-nowrap">COS 212 · Trees and traversals</span>
 

@@ -122,7 +122,7 @@ The design rationale behind MainFrame is documented in two companion documents, 
 
 ## 👥 Team
 
-**Group:** [Group name]
+**Group:** MainFrame
 
 | Name | Role | GitHub |
 | --- | --- | --- |

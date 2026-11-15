@@ -12,31 +12,58 @@
         "id": "idea",
         "heading": "1. The idea",
         "blocks": [
-          { "type": "p", "html": "A tree stores data in a hierarchy. Each item is a <strong>node</strong>, and the lines that join nodes are <strong>edges</strong>. A tree never has a loop: there is exactly one path between any two nodes." },
-          { "type": "tree", "values": [50, 30, 70, 20, 40, 60, 80], "caption": "A tree with 7 nodes and 6 edges." },
-          { "type": "callout", "html": "Think of your <strong>Documents</strong> folder. It holds sub-folders, which hold more folders and files. That is a tree." }
+          {
+            "type": "p",
+            "html": "A tree stores data in a hierarchy. Each item is a <strong>node</strong>, and the lines that join nodes are <strong>edges</strong>. A tree never has a loop: there is exactly one path between any two nodes."
+          },
+          {
+            "type": "tree",
+            "values": [
+              50,
+              30,
+              70,
+              20,
+              40,
+              60,
+              80
+            ],
+            "caption": "A tree with 7 nodes and 6 edges."
+          },
+          {
+            "type": "callout",
+            "html": "Think of your <strong>Documents</strong> folder. It holds sub-folders, which hold more folders and files. That is a tree."
+          }
         ]
       },
       {
         "id": "terms",
         "heading": "2. The words you need",
         "blocks": [
-          { "type": "list", "items": [
-            "<strong>Root:</strong> the single node at the top (50 above).",
-            "<strong>Parent and child:</strong> 30 is the parent of 20 and 40; they are its children.",
-            "<strong>Leaf:</strong> a node with no children (20, 40, 60 and 80).",
-            "<strong>Subtree:</strong> a node together with everything below it.",
-            "<strong>Level (depth):</strong> how many edges a node is from the root. The root is at level 0.",
-            "<strong>Height:</strong> the number of edges on the longest path from the root to a leaf. The tree above has height 2."
-          ] }
+          {
+            "type": "list",
+            "items": [
+              "<strong>Root:</strong> the single node at the top (50 above).",
+              "<strong>Parent and child:</strong> 30 is the parent of 20 and 40; they are its children.",
+              "<strong>Leaf:</strong> a node with no children (20, 40, 60 and 80).",
+              "<strong>Subtree:</strong> a node together with everything below it.",
+              "<strong>Level (depth):</strong> how many edges a node is from the root. The root is at level 0.",
+              "<strong>Height:</strong> the number of edges on the longest path from the root to a leaf. The tree above has height 2."
+            ]
+          }
         ]
       },
       {
         "id": "binary",
         "heading": "3. Binary trees",
         "blocks": [
-          { "type": "p", "html": "In a <strong>binary tree</strong>, every node has <em>at most two</em> children, called the <strong>left</strong> and <strong>right</strong> child. Every tree in this app is a binary tree." },
-          { "type": "callout", "html": "A node can have zero, one or two children. \"Binary\" sets a maximum, not an exact number." }
+          {
+            "type": "p",
+            "html": "In a <strong>binary tree</strong>, every node has <em>at most two</em> children, called the <strong>left</strong> and <strong>right</strong> child. Every tree in this app is a binary tree."
+          },
+          {
+            "type": "callout",
+            "html": "A node can have zero, one or two children. \"Binary\" sets a maximum, not an exact number."
+          }
         ]
       }
     ],
@@ -47,7 +74,17 @@
         "<strong>Height</strong> is the number of edges on the longest path from the root to a leaf.",
         "In a <strong>binary</strong> tree, every node has at most two children: left and right."
       ],
-      "terms": ["node", "edge", "root", "parent", "child", "leaf", "subtree", "level", "height"]
+      "terms": [
+        "node",
+        "edge",
+        "root",
+        "parent",
+        "child",
+        "leaf",
+        "subtree",
+        "level",
+        "height"
+      ]
     }
   },
   {
@@ -63,34 +100,88 @@
         "id": "rule",
         "heading": "1. The BST rule",
         "blocks": [
-          { "type": "p", "html": "For <strong>every</strong> node: all values in its <strong>left</strong> subtree are smaller, and all values in its <strong>right</strong> subtree are larger." },
-          { "type": "tree", "values": [50, 30, 70, 20, 40, 60, 80], "caption": "Everything left of 50 is smaller than 50; everything right of it is larger." },
-          { "type": "callout", "html": "The rule applies to the <em>whole</em> subtree, not just the direct children. 45 could never sit in 50's right subtree." }
+          {
+            "type": "p",
+            "html": "For <strong>every</strong> node: all values in its <strong>left</strong> subtree are smaller, and all values in its <strong>right</strong> subtree are larger."
+          },
+          {
+            "type": "tree",
+            "values": [
+              50,
+              30,
+              70,
+              20,
+              40,
+              60,
+              80
+            ],
+            "caption": "Everything left of 50 is smaller than 50; everything right of it is larger."
+          },
+          {
+            "type": "callout",
+            "html": "The rule applies to the <em>whole</em> subtree, not just the direct children. 45 could never sit in 50's right subtree."
+          }
         ]
       },
       {
         "id": "search",
         "heading": "2. Searching",
         "blocks": [
-          { "type": "p", "html": "Start at the root. If the value you want is smaller, go left; if it is larger, go right. Stop when you find it, or when you fall off the tree." },
-          { "type": "bst-search", "values": [50, 30, 70, 20, 40, 60, 80], "target": 60 }
+          {
+            "type": "p",
+            "html": "Start at the root. If the value you want is smaller, go left; if it is larger, go right. Stop when you find it, or when you fall off the tree."
+          },
+          {
+            "type": "bst-search",
+            "values": [
+              50,
+              30,
+              70,
+              20,
+              40,
+              60,
+              80
+            ],
+            "target": 60
+          }
         ]
       },
       {
         "id": "insert",
         "heading": "3. Inserting",
         "blocks": [
-          { "type": "p", "html": "To insert a value, search for it. The empty spot where the search falls off the tree is exactly where the new node goes." },
-          { "type": "code", "text": "insert 35:  35 < 50 → left\n            35 > 30 → right\n            35 < 40 → left (empty) → place 35 here" }
+          {
+            "type": "p",
+            "html": "To insert a value, search for it. The empty spot where the search falls off the tree is exactly where the new node goes."
+          },
+          {
+            "type": "code",
+            "text": "insert 35:  35 < 50 → left\n            35 > 30 → right\n            35 < 40 → left (empty) → place 35 here"
+          }
         ]
       },
       {
         "id": "balance",
         "heading": "4. Why balance matters",
         "blocks": [
-          { "type": "p", "html": "Each comparison throws away about half of the tree, so a <strong>balanced</strong> BST with n nodes needs about log₂ n checks: 10 checks for 1,000 books." },
-          { "type": "p", "html": "Insert values that are already sorted, though, and every node goes to the right. The tree becomes a long chain and search slows to <strong>O(n)</strong>." },
-          { "type": "tree", "values": [10, 20, 30, 40], "caption": "Inserting 10, 20, 30, 40 in order gives a lopsided tree." }
+          {
+            "type": "p",
+            "html": "Each comparison throws away about half of the tree, so a <strong>balanced</strong> BST with n nodes needs about log₂ n checks: 10 checks for 1,000 books."
+          },
+          {
+            "type": "p",
+            "html": "Insert values that are already sorted, though, and every node goes to the right. The tree becomes a long chain and search slows to <strong>O(n)</strong>."
+          },
+          {
+            "type": "tree",
+            "values": [
+              10,
+              20,
+              30,
+              40
+            ],
+            "caption": "Inserting 10, 20, 30, 40 in order gives a lopsided tree."
+          }
         ]
       }
     ],
@@ -101,79 +192,177 @@
         "<strong>Insert:</strong> search for the value; where you fall off the tree is where it goes.",
         "A <strong>balanced</strong> tree searches in O(log n). Inserting sorted values makes a lopsided tree that searches in O(n)."
       ],
-      "terms": ["BST property", "search", "insert", "balanced", "degenerate", "O(log n)"],
+      "terms": [
+        "BST property",
+        "search",
+        "insert",
+        "balanced",
+        "degenerate",
+        "O(log n)"
+      ],
       "example": {
         "title": "Search for 60",
-        "lines": ["60 > 50 → right", "60 < 70 → left", "60 = 60 → found"],
+        "lines": [
+          "60 > 50 → right",
+          "60 < 70 → left",
+          "60 = 60 → found"
+        ],
         "caption": "3 comparisons out of 7 nodes"
       }
     }
   },
   {
-    "slug": "traversals",
+    "slug": "bfs",
     "number": 3,
-    "title": "Traversals: BFS and DFS",
-    "short": "Traversals",
+    "title": "Breadth-first search (BFS)",
+    "short": "BFS",
     "minutes": 15,
-    "quizId": "lesson-traversals",
-    "intro": "The library robot has to check every shelf in the catalogue tree. There are two ways to do it: go <strong>level by level</strong>, or go <strong>as deep as possible first</strong>. By the end you'll be able to list both orders for any tree.",
+    "quizId": "lesson-bfs",
+    "intro": "The library robot has to check every shelf in the catalogue tree, starting at the top. <strong>Breadth-first search</strong> does it <strong>level by level</strong>: the whole top shelf, then every shelf one level down, and so on. By the end you'll be able to list the BFS order of any tree.",
     "sections": [
       {
         "id": "idea",
         "heading": "1. What is a traversal?",
         "blocks": [
-          { "type": "p", "html": "A <strong>traversal</strong> visits every node in a tree exactly once. The only question is the <em>order</em>. Different orders are useful for different jobs." },
-          { "type": "compare", "cards": [
-            {
-              "tone": "blue",
-              "label": "Breadth-first (BFS)",
-              "title": "Level by level, left to right",
-              "html": "Uses a <strong>queue</strong>: first in, first out. Take a node from the front, visit it, and add its children to the back.",
-              "example": "50 → 30, 70 → 20, 40, 60, 80"
-            },
-            {
-              "tone": "yellow",
-              "label": "Depth-first (DFS)",
-              "title": "As deep as possible, then back up",
-              "html": "Uses a <strong>stack</strong>, usually through recursion. Where the node is visited gives three orders:",
-              "items": [
-                "<strong>Pre-order:</strong> node, left, right",
-                "<strong>In-order:</strong> left, node, right (sorted for a BST!)",
-                "<strong>Post-order:</strong> left, right, node"
-              ]
-            }
-          ] }
+          {
+            "type": "p",
+            "html": "A <strong>traversal</strong> visits every node in a tree exactly once. BFS is one way to choose the order: visit every node on one level, left to right, before moving down to the next level."
+          },
+          {
+            "type": "tree",
+            "values": [
+              50,
+              30,
+              70,
+              20,
+              40,
+              60,
+              80
+            ],
+            "caption": "BFS visits level 0 (50), then level 1 (30, 70), then level 2 (20, 40, 60, 80)."
+          },
+          {
+            "type": "callout",
+            "html": "BFS order for this tree: <code>50, 30, 70, 20, 40, 60, 80</code>. Read the tree like a page of text: top row first, left to right."
+          }
+        ]
+      },
+      {
+        "id": "queue",
+        "heading": "2. BFS uses a queue",
+        "blocks": [
+          {
+            "type": "p",
+            "html": "To keep track of which node comes next, BFS uses a <strong>queue</strong>: first in, first out (FIFO). Nodes join at the back and leave from the front."
+          },
+          {
+            "type": "list",
+            "items": [
+              "Put the <strong>root</strong> in the queue.",
+              "While the queue is not empty, take the node at the <strong>front</strong> and <strong>visit</strong> it.",
+              "Add that node's <strong>left child</strong>, then its <strong>right child</strong>, to the <strong>back</strong> of the queue (if they exist).",
+              "Repeat until the queue is empty."
+            ]
+          },
+          {
+            "type": "code",
+            "text": "bfs(root):\n  queue ← [root]\n  while queue is not empty:\n    node ← queue.dequeue()\n    visit(node)\n    if node.left  exists: queue.enqueue(node.left)\n    if node.right exists: queue.enqueue(node.right)"
+          },
+          {
+            "type": "callout",
+            "html": "Why a queue? Children join <em>behind</em> everything already waiting, so every node on the current level leaves the queue before any node on the next level."
+          }
         ]
       },
       {
         "id": "try",
-        "heading": "2. Try it: step through the tree",
+        "heading": "3. Try it: step through BFS",
         "blocks": [
-          { "type": "p", "html": "Pick an order and step forwards. Watch the queue or call stack, and the highlighted line of pseudocode." },
-          { "type": "traversal-stepper", "values": [50, 30, 70, 20, 40, 60, 80] }
+          {
+            "type": "p",
+            "html": "Step forwards and watch the queue on the right. Each step takes one node from the front and adds its children to the back."
+          },
+          {
+            "type": "traversal-stepper",
+            "values": [
+              50,
+              30,
+              70,
+              20,
+              40,
+              60,
+              80
+            ]
+          }
+        ]
+      },
+      {
+        "id": "example",
+        "heading": "4. Worked example",
+        "blocks": [
+          {
+            "type": "tree",
+            "values": [
+              45,
+              25,
+              65,
+              15,
+              35,
+              55
+            ],
+            "caption": "A tree with 6 nodes. 65 has only a left child."
+          },
+          {
+            "type": "code",
+            "text": "step  visit  queue after\n 0     –     [45]\n 1     45    [25, 65]\n 2     25    [65, 15, 35]\n 3     65    [15, 35, 55]\n 4     15    [35, 55]\n 5     35    [55]\n 6     55    [ ]\n\nBFS order: 45, 25, 65, 15, 35, 55"
+          },
+          {
+            "type": "callout",
+            "html": "Look at step 2: 15 and 35 join the queue <em>behind</em> 65. That is why 65 is visited before them, even though they were added later."
+          }
         ]
       },
       {
         "id": "when",
-        "heading": "3. When to use which",
+        "heading": "5. When BFS is useful",
         "blocks": [
-          { "type": "list", "items": [
-            "<strong>BFS</strong> finds the node <em>closest</em> to the root first, such as the nearest damaged shelf. On graphs it finds shortest paths.",
-            "<strong>In-order DFS</strong> prints a BST's values in sorted order.",
-            "<strong>Pre-order DFS</strong> copies a tree: each parent is created before its children.",
-            "<strong>Post-order DFS</strong> deletes a tree safely: children are removed before their parent."
-          ] }
+          {
+            "type": "list",
+            "items": [
+              "BFS finds the node <strong>closest to the root</strong> first, such as the nearest damaged shelf.",
+              "On graphs, BFS finds the <strong>shortest path</strong> (fewest edges) between two points, for example in route planning or social networks.",
+              "BFS prints a tree <strong>level by level</strong>.",
+              "Every node is visited once, so BFS takes <strong>O(n)</strong> time. The queue holds at most about one level of the tree."
+            ]
+          }
         ]
       }
     ],
     "summary": {
       "points": [
-        "A <strong>traversal</strong> visits every node exactly once. Only the order changes.",
-        "<strong>BFS</strong> goes level by level using a <strong>queue</strong> (first in, first out).",
-        "<strong>DFS</strong> goes deep first using a <strong>stack</strong> or recursion, in pre-, in- or post-order.",
-        "<strong>In-order</strong> DFS of a BST gives the values in sorted order."
+        "A <strong>traversal</strong> visits every node exactly once.",
+        "<strong>BFS</strong> visits the tree <strong>level by level</strong>, left to right.",
+        "BFS uses a <strong>queue</strong> (first in, first out): take a node from the front, visit it, add its children to the back.",
+        "BFS finds the node closest to the root first, and shortest paths on graphs. It runs in <strong>O(n)</strong> time."
       ],
-      "terms": ["traversal", "BFS", "DFS", "queue", "stack", "pre-order", "in-order", "post-order"]
+      "terms": [
+        "traversal",
+        "BFS",
+        "level order",
+        "queue",
+        "FIFO",
+        "enqueue",
+        "dequeue"
+      ],
+      "example": {
+        "title": "BFS of the 7-node tree",
+        "lines": [
+          "level 0: 50",
+          "level 1: 30, 70",
+          "level 2: 20, 40, 60, 80"
+        ],
+        "caption": "Order: 50, 30, 70, 20, 40, 60, 80"
+      }
     }
   }
 ]

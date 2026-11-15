@@ -11,7 +11,7 @@ if (!lesson.value) {
 const quiz = computed(() => (lesson.value ? getQuiz(lesson.value.quizId) : undefined))
 const next = computed(() => lessons.find(l => l.number === (lesson.value?.number ?? 0) + 1))
 
-useHead(() => ({ title: `Lesson ${lesson.value?.number}: ${lesson.value?.title} · MainFrame` }))
+useHead(() => ({ title: `Lesson ${lesson.value?.number}: ${lesson.value?.title} · Mainframe` }))
 
 watchEffect(() => { if (lesson.value) markVisited(lesson.value.slug) })
 

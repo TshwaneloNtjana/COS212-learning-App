@@ -1,6 +1,6 @@
 <!-- Dashboard -->
 <script setup lang="ts">
-useHead({ title: 'Dashboard · MainFrame' })
+useHead({ title: 'Dashboard · Mainframe' })
 
 const { lessons, quizzes, getQuiz } = useContent()
 const {
@@ -12,13 +12,13 @@ const started = computed(() => lessons.some(l => lessonStatus(l.slug) !== 'new')
 
 const heading = computed(() => {
   if (!nextLesson.value) return 'You’re ready for the lecture.'
-  if (!started.value) return 'Welcome to MainFrame.'
+  if (!started.value) return 'Welcome to Mainframe.'
   return `Welcome back. Lesson ${nextLesson.value.number} is next.`
 })
 
 const intro = computed(() => {
   if (!nextLesson.value) return 'You’ve finished every lesson. Try the final check, read the summary and look over your notes before class.'
-  if (!started.value) return 'Before your lecture on trees, you’ll learn what a binary search tree is and how BFS and DFS walk through one. Each lesson ends with a short practice quiz. Your progress is saved on this device.'
+  if (!started.value) return 'Before your lecture on trees, you’ll learn what a binary search tree is and how breadth-first search (BFS) walks through one. Each lesson ends with a short practice quiz. Your progress is saved on this device.'
   return `You’ve finished ${lessonsDone.value} of ${lessons.length} lessons. Next up is Lesson ${nextLesson.value.number} (about ${nextLesson.value.minutes} minutes), then its short practice quiz.`
 })
 

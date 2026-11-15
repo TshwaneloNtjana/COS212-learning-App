@@ -1,8 +1,6 @@
 <!-- Summary of every lesson, built from the `summary` field in lessons.json. -->
 <script setup lang="ts">
-import type { Order } from '~/utils/bst'
-
-useHead({ title: 'Summary · MainFrame' })
+useHead({ title: 'Summary · Mainframe' })
 
 const { lessons } = useContent()
 const { lessonStatus, bestFor } = useProgress()
@@ -19,13 +17,8 @@ function chip(slug: string, quizId: string) {
 }
 
 // Cheat sheet is computed from the same code the stepper uses, so it can never be wrong.
-const sampleTree = [50, 30, 70, 20, 40, 60, 80]
-const cheat: { order: Order; name: string; rule: string; uses: string }[] = [
-  { order: 'bfs', name: 'BFS', rule: 'Level by level, left to right', uses: 'Queue' },
-  { order: 'pre', name: 'Pre-order', rule: 'Node, left, right', uses: 'Stack / recursion' },
-  { order: 'in', name: 'In-order', rule: 'Left, node, right', uses: 'Stack / recursion' },
-  { order: 'post', name: 'Post-order', rule: 'Left, right, node', uses: 'Stack / recursion' },
-]
+const sampleTree = [45, 25, 65, 15, 35, 55]
+const cheat = traceBfs(sampleTree)
 
 function print() {
   window.print()
@@ -93,16 +86,19 @@ function print() {
     </v-card>
 
     <v-card id="cheat" class="p-7 scroll-mt-24" aria-labelledby="cheat-h">
-      <h2 id="cheat-h" class="text-[22px] font-medium mb-1.5">Cheat sheet: traversal orders</h2>
-      <p class="text-[15px] text-[#3D3520] mb-4">For the tree with 50 at the root, 30 and 70 below, then 20, 40, 60 and 80.</p>
+      <h2 id="cheat-h" class="text-[22px] font-medium mb-1.5">Cheat sheet: BFS step by step</h2>
+      <p class="text-[15px] text-[#3D3520] mb-4">
+        For the tree with 45 at the root, 25 and 65 below it, then 15, 35 and 55.
+        Take a node from the front of the queue, visit it, add its children to the back.
+      </p>
       <v-table>
-        <thead><tr><th>Traversal</th><th>Rule</th><th>Uses</th><th>Visit order</th></tr></thead>
+        <thead><tr><th>Step</th><th>Visit</th><th>Queue after (front first)</th><th>Visit order so far</th></tr></thead>
         <tbody>
-          <tr v-for="c in cheat" :key="c.order">
-            <td class="font-medium">{{ c.name }}</td>
-            <td>{{ c.rule }}</td>
-            <td>{{ c.uses }}</td>
-            <td class="font-mono">{{ traversalOrder(sampleTree, c.order).join(' ') }}</td>
+          <tr v-for="(c, i) in cheat" :key="i">
+            <td>{{ i }}</td>
+            <td class="font-medium">{{ c.current ?? '–' }}</td>
+            <td class="font-mono">[{{ c.queue.join(', ') }}]</td>
+            <td class="font-mono">{{ c.output.join(', ') || '–' }}</td>
           </tr>
         </tbody>
       </v-table>

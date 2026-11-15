@@ -1,15 +1,22 @@
-// // https://nuxt.com/docs/api/configuration/nuxt-config
-// export default defineNuxtConfig({
-//   modules: ['vuetify-nuxt-module'],
-//   compatibilityDate: '2025-07-15',
-//   devtools: { enabled: true }
-// })
-
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
+
+  // Progress is stored in the browser, so render on the client only.
+  ssr: false,
+
+  app: {
+    head: {
+      title: 'Mainframe',
+      htmlAttrs: { lang: 'en' },
+      link: [
+        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap' },
+      ],
+    },
+  },
 
   modules: ['vuetify-nuxt-module'],
 
@@ -28,12 +35,12 @@ export default defineNuxtConfig({
           mainframe: {
             dark: false,
             colors: {
-              primary: '#F2B807',            // yellow: app bar, main buttons, current node
-              'on-primary': '#1F1A0A',       // dark text on yellow
-              'primary-darken-1': '#8A6500', // deep gold: links, text, icons on white
-              secondary: '#2F6FB5',          // blue: queue / stack highlight
+              primary: '#F2B807',
+              'on-primary': '#1F1A0A',
+              'primary-darken-1': '#8A6500',
+              secondary: '#2F6FB5',
               'on-secondary': '#FFFFFF',
-              background: '#FFFBEF',         // warm off-white page
+              background: '#FFFBEF',
               surface: '#FFFFFF',
               error: '#B3261E',
               success: '#2E7D4F',
@@ -43,7 +50,7 @@ export default defineNuxtConfig({
       },
       defaults: {
         VBtn: { rounded: 'pill' },
-        VCard: { variant: 'outlined', rounded: 'lg' },
+        VCard: { variant: 'flat', border: true, rounded: 'lg' },
       },
     },
   },

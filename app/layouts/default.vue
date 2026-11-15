@@ -4,7 +4,9 @@ const { lessons } = useContent()
 const { overallPercent, lessonStatus, lessonsDone, openNotes } = useProgress()
 const route = useRoute()
 
-const drawer = ref<boolean | null>(null) // null: open on desktop, hamburger on phones
+// The menu is always visible from 960px wide; on smaller screens it opens from the hamburger button.
+const { mdAndUp } = useDisplay()
+const drawer = ref(false)
 const lessonsOpen = ref(['lessons'])
 
 const lessonIcon = (slug: string) => {
@@ -16,13 +18,13 @@ const lessonIcon = (slug: string) => {
 <template>
   <v-app>
     <v-app-bar color="primary" flat>
-      <v-app-bar-nav-icon class="d-lg-none" aria-label="Open menu" @click="drawer = !drawer" />
+      <v-app-bar-nav-icon v-if="!mdAndUp" aria-label="Open menu" @click="drawer = !drawer" />
 
-      <NuxtLink to="/" class="flex items-center gap-2 ml-4 text-inherit no-underline" aria-label="MainFrame dashboard">
+      <NuxtLink to="/" class="flex items-center gap-2 ml-4 text-inherit no-underline" aria-label="Mainframe dashboard">
         <v-icon icon="mdi-file-tree" size="28" />
-        <span class="text-xl font-bold">MainFrame</span>
+        <span class="text-xl font-bold">Mainframe</span>
       </NuxtLink>
-      <span class="hidden md:inline ml-4 text-sm text-[#4A3D10] whitespace-nowrap">COS 212 · Trees and traversals</span>
+      <span class="hidden md:inline ml-4 text-sm text-[#4A3D10] whitespace-nowrap">COS 212 · Trees and BFS</span>
 
       <v-spacer />
 
@@ -42,7 +44,12 @@ const lessonIcon = (slug: string) => {
       <v-btn icon="mdi-note-text-outline" to="/notes" aria-label="My notes" />
     </v-app-bar>
 
-    <v-navigation-drawer v-model="drawer" width="280">
+    <v-navigation-drawer
+      :model-value="mdAndUp || drawer"
+      :permanent="mdAndUp"
+      width="280"
+      @update:model-value="drawer = $event"
+    >
       <v-list v-model:opened="lessonsOpen" nav density="comfortable" class="px-3 pt-4" color="on-primary" active-class="bg-primary">
         <v-list-item to="/" exact prepend-icon="mdi-view-dashboard-outline" title="Dashboard" rounded="xl" />
 

@@ -27,7 +27,7 @@ interface Saved {
   notes: Note[]
 }
 
-const STORAGE_KEY = 'mainframe-v2'
+const STORAGE_KEY = 'mainframe-v1'
 const empty = (): Saved => ({ visited: [], attempts: [], notes: [] })
 let loaded = false
 

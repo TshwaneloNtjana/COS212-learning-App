@@ -166,7 +166,7 @@ The design rationale behind MainFrame is documented in two companion documents, 
 | --- | --- | --- |
 | Melisa Ledwaba | Developer | [@Melissa941](https://github.com/Melissa941) |
 | Tamsanqa Thwala | [Role] | [@username](https://github.com/) |
-| Matlotlo Maphalela | [Role] | [@username](https://github.com/) |
+| Matlotlo Maphalela | [Role] | [@mjmaphalela](https://github.com/mjmaphalela) |
 | Lesedi Lebopa | [Role] | [@username](https://github.com/) |
 | Tshwanelo Ntjana | [Role] | [@TshwaneloNtjana](https://github.com/TshwaneloNtjana) |
 

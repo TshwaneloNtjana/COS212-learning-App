@@ -11,6 +11,20 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
 
+  // SPA mode (as the README says): progress lives in localStorage, so there is nothing
+  // to render on a server. This also fixes the hydration warnings and lets every page
+  // load directly on GitHub Pages.
+  ssr: false,
+
+  app: {
+    // For GitHub Pages run: NUXT_APP_BASE_URL=/COS212-learning-App/ npm run generate
+    head: {
+      htmlAttrs: { lang: 'en' },
+      title: 'MainFrame',
+      meta: [{ name: 'description', content: 'A pre-lecture tutor for binary search trees and traversals (COS 212).' }],
+    },
+  },
+
   modules: ['vuetify-nuxt-module'],
 
   css: ['@mdi/font/css/materialdesignicons.css', '~/assets/css/main.css'],

@@ -38,7 +38,9 @@ The project was built for the **COS 750 – Educational Software Development** e
 | --- | --- | --- |
 | 🧭 | **Diagnostic quiz** | Answers 5 short questions that set a standard or supported learning path |
 | 📚 | **Three bite-sized lessons** | Learns tree terms, BSTs and traversals through a running library-catalogue example |
-| 🔍 | **BST playground** | Inserts and searches values and sees every comparison highlighted |
+| 🔍 | **BST playground** | Searches by choosing *left*, *right* or *found it* at every node (buttons, arrow keys or tapping the next node), with feedback on every choice; inserts new values; or watches each step |
+| 🎬 | **Lesson video** | Watches a 4-minute narrated explainer (BST rule, a search, BFS step by step) with captions and a transcript |
+| ♿ | **Accessibility settings** | Chooses larger text, high contrast, written tree descriptions, steps read aloud, or reduced motion |
 | ▶️ | **Traversal stepper** | Steps forwards and backwards through BFS and pre-, in- and post-order DFS, with the live queue or call stack and highlighted pseudocode |
 | 💡 | **Predict mode** | Taps the node they think comes next and gets instant feedback |
 | ✅ | **Mastery quiz** | Orders nodes, builds trees and answers scenario questions on randomised trees |
@@ -46,7 +48,7 @@ The project was built for the **COS 750 – Educational Software Development** e
 | 🏅 | **Progress and badges** | Sees mastery per concept and earns low-stakes, private badges |
 | 📝 | **Lecture notes** | Collects questions to bring to class and downloads them as a `.txt` file |
 
-**Accessibility:** works on phones from 360 px wide, supports keyboard navigation and screen-reader labels, and shows node states with shape as well as colour. **Privacy:** no sign-in and no personal data collected; progress stays in the browser's local storage.
+**Accessibility:** designed for screen-reader users (NVDA, JAWS, VoiceOver, TalkBack) and keyboard-only use: a skip link, focus moved to each new page's heading, every tree diagram described in text (node by node, with its state), every demo step announced, and node states shown with shape (ring, dashes, tick, cross) as well as colour. The ♿ button in the top bar has larger text, high contrast, "describe trees in text", "read steps aloud" and "reduce motion". Automated checks with axe-core report no WCAG 2.1 AA violations. **Privacy:** no sign-in and no personal data collected; progress stays in the browser's local storage.
 
 ## 🎓 Curriculum alignment
 
@@ -89,6 +91,18 @@ npm run dev
 | `npm run build` | Builds the app for production |
 | `npm run generate` | Builds a static site for GitHub Pages (output in `.output/public`) |
 | `npm run preview` | Previews the production build locally |
+
+### Lesson video
+
+The video lives in `public/videos/` (`.mp4`, captions `.vtt`, poster `.jpg`) and is placed in Lesson 1 through a `video` block in `app/data/lessons.json`. The narration describes everything on screen. It was made with code (drawn frame by frame, synthetic voice), so it can be regenerated; to use a recorded voice instead, record over the transcript and swap the `.mp4`.
+
+### Publishing on GitHub Pages
+
+```bash
+NUXT_APP_BASE_URL=/COS212-learning-App/ npm run generate
+```
+
+Then publish `.output/public`. The app runs in SPA mode, so every page also works when opened directly.
 
 ## 📁 Project structure
 

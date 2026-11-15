@@ -15,6 +15,10 @@ useHead(() => ({ title: `Lesson ${lesson.value?.number}: ${lesson.value?.title} 
 
 watchEffect(() => { if (lesson.value) markVisited(lesson.value.slug) })
 
+const hasExtras = computed(() =>
+  !!(lesson.value?.videos?.length || lesson.value?.practiceLinks?.length || lesson.value?.resources?.length),
+)
+
 const noteTopic = computed(() => `Lesson ${lesson.value?.number} · ${lesson.value?.short}`)
 </script>
 
@@ -53,7 +57,9 @@ const noteTopic = computed(() => `Lesson ${lesson.value?.number} · ${lesson.val
           :href="`#${s.id}`"
           class="text-[13px] px-3 py-1.5 rounded-full bg-white border border-tq-line no-underline text-[#3D3520] hover:bg-tq-yellow-light"
         >{{ s.heading }}</a>
+        <a v-if="lesson.problems?.length" href="#problems" class="text-[13px] px-3 py-1.5 rounded-full bg-white border border-tq-line no-underline text-[#3D3520] hover:bg-tq-yellow-light">Practice problems</a>
         <a href="#practice" class="text-[13px] px-3 py-1.5 rounded-full bg-tq-yellow no-underline text-tq-ink font-medium">Practice quiz</a>
+        <a v-if="hasExtras" href="#more" class="text-[13px] px-3 py-1.5 rounded-full bg-white border border-tq-line no-underline text-[#3D3520] hover:bg-tq-yellow-light">Videos and resources</a>
       </div>
     </header>
 
@@ -63,6 +69,17 @@ const noteTopic = computed(() => `Lesson ${lesson.value?.number} · ${lesson.val
       <div class="flex flex-col gap-4">
         <LessonBlock v-for="(b, i) in s.blocks" :key="i" :block="b" />
       </div>
+    </v-card>
+
+    <!-- Practice problems (self-check, not marked) -->
+    <v-card v-if="lesson.problems?.length" id="problems" class="p-6 sm:p-7 scroll-mt-24">
+      <h2 class="text-[22px] font-medium mb-1.5">Practice problems</h2>
+      <p class="mb-5 text-base text-[#2E2818]">
+        Work these out on paper first, then check the answer. They are not marked; the practice quiz below is.
+      </p>
+      <ol class="flex flex-col gap-4">
+        <PracticeProblem v-for="(p, i) in lesson.problems" :key="p.id" :problem="p" :number="i + 1" />
+      </ol>
     </v-card>
 
     <div class="flex flex-wrap items-center gap-3 px-5 py-4 rounded-xl border-[1.5px] border-dashed border-[#C9B26A]">
@@ -87,5 +104,28 @@ const noteTopic = computed(() => `Lesson ${lesson.value?.number} · ${lesson.val
         </template>
       </QuizRunner>
     </v-card>
+
+    <!-- Videos, more practice and further reading -->
+    <section v-if="hasExtras" id="more" class="scroll-mt-24 flex flex-col gap-6" aria-labelledby="more-h">
+      <h2 id="more-h" class="text-[22px] font-medium">Videos and resources</h2>
+
+      <div v-if="lesson.videos?.length">
+        <h3 class="text-lg font-medium mb-3">Watch</h3>
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <VideoCard v-for="v in lesson.videos" :key="v.id" :video="v" />
+        </div>
+      </div>
+
+      <div v-if="lesson.practiceLinks?.length">
+        <h3 class="text-lg font-medium mb-1">More practice</h3>
+        <p class="text-sm text-tq-muted mb-3">Coding problems on other sites, from basic to harder. They open in a new tab.</p>
+        <ResourceList :items="lesson.practiceLinks" />
+      </div>
+
+      <div v-if="lesson.resources?.length">
+        <h3 class="text-lg font-medium mb-3">Further reading</h3>
+        <ResourceList :items="lesson.resources" />
+      </div>
+    </section>
   </div>
 </template>

@@ -66,6 +66,27 @@ export function layoutTree(values: number[], width = 480, levelGap = 84, pad = 3
   return { nodes: [...pos.values()], edges, width, height: pad * 2 + maxDepth * levelGap }
 }
 
+/** Height in edges (an empty tree or a single node has height 0). */
+export function treeHeight(values: number[]) {
+  return Math.max(0, ...levelOrder(buildBst(values)).map(n => n.depth))
+}
+
+/** Values of the nodes with no children. */
+export function leafValues(values: number[]) {
+  return levelOrder(buildBst(values)).filter(n => !n.left && !n.right).map(n => n.value)
+}
+
+/** Path from the root to the smallest ('min', keep going left) or largest ('max', keep going right) value. */
+export function extremePath(values: number[], which: 'min' | 'max') {
+  const path: number[] = []
+  let n = buildBst(values)
+  while (n) {
+    path.push(n.value)
+    n = which === 'min' ? n.left : n.right
+  }
+  return path
+}
+
 export interface SearchStep { value: number; result: 'left' | 'right' | 'found' }
 
 /** Follows the BST search path for target. */

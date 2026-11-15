@@ -26,6 +26,30 @@ export interface Section {
   blocks: Block[]
 }
 
+export interface Video {
+  id: string // YouTube video id, e.g. "HZ5YTanv5QE"
+  title: string
+  channel: string
+  length?: string // e.g. "3:59"
+  note?: string // why it's worth watching
+}
+
+export interface Resource {
+  title: string
+  url: string
+  source: string // e.g. "GeeksforGeeks"
+  note?: string
+  level?: 'Basic' | 'Easy' | 'Medium' | 'Hard'
+}
+
+export type ProblemLevel = 'Basic' | 'Easy' | 'Medium'
+
+/** Self-check problems. For tree kinds the answer is computed from the values, so it is always right. */
+export type Problem =
+  | { id: string; level: ProblemLevel; title: string; kind: 'height' | 'leaves' | 'min-max' | 'bfs-order'; values: number[] }
+  | { id: string; level: ProblemLevel; title: string; kind: 'search-path'; values: number[]; target: number }
+  | { id: string; level: ProblemLevel; title: string; kind: 'text'; prompt: string; answer: string; tree?: number[] }
+
 export interface Lesson {
   slug: string
   number: number
@@ -35,6 +59,10 @@ export interface Lesson {
   quizId: string
   intro: string
   sections: Section[]
+  problems?: Problem[]
+  videos?: Video[]
+  practiceLinks?: Resource[] // problems on other sites
+  resources?: Resource[] // further reading
   summary: {
     points: string[]
     terms: string[]

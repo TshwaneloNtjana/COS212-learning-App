@@ -8,6 +8,8 @@ const props = defineProps<{ quiz: Quiz }>()
 const emit = defineEmits<{ submitted: [attempt: Attempt] }>()
 
 const { recordAttempt } = useProgress()
+const { announce } = useA11y()
+const resultBox = ref<{ $el: HTMLElement } | null>(null)
 
 const answers = reactive<Record<string, AnswerValue>>({})
 const result = ref<Attempt | null>(null)
@@ -36,10 +38,12 @@ const allAnswered = computed(() => answeredCount.value === props.quiz.questions.
 function place(qid: string, v: number) {
   if (checked.value) return
   ;(answers[qid] as number[]).push(v)
+  announce(`${v} placed in position ${(answers[qid] as number[]).length}.`)
 }
 function unplace(qid: string, index: number) {
   if (checked.value) return
   answers[qid] = (answers[qid] as number[]).slice(0, index)
+  announce(index === 0 ? 'Order cleared.' : `Removed from position ${index + 1} onwards.`)
 }
 const placed = (qid: string) => (answers[qid] as number[] | undefined) ?? []
 
@@ -47,6 +51,11 @@ function check() {
   const seconds = Math.round((Date.now() - startedAt) / 1000)
   result.value = recordAttempt(props.quiz, { ...answers }, seconds)
   emit('submitted', result.value)
+  // move focus to the score so screen-reader users hear the result straight away
+  nextTick(() => {
+    const el = resultBox.value?.$el
+    if (el) { el.setAttribute('tabindex', '-1'); el.focus() }
+  })
 }
 
 const passed = computed(() => (result.value?.percent ?? 0) >= props.quiz.passMark)
@@ -150,6 +159,8 @@ function optionClass(q: { id: string; answer: string }, optId: string) {
 
     <v-alert
       v-if="result"
+      ref="resultBox"
+      role="status"
       class="mt-7"
       variant="tonal"
       :type="passed ? 'success' : 'warning'"

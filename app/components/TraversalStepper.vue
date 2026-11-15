@@ -4,6 +4,7 @@
 import type { Order } from '~/utils/bst'
 
 const props = defineProps<{ values: number[] }>()
+const { announce, settings } = useA11y()
 
 const order = ref<Order>('bfs')
 const step = ref(0)
@@ -35,19 +36,34 @@ function togglePlay() {
   timer = setInterval(() => {
     if (step.value >= total.value) stop()
     else step.value++
-  }, 1200)
+  }, settings.value.reduceMotion || settings.value.readAloud ? 3500 : 1600)
 }
 const back = () => { stop(); step.value = Math.max(0, step.value - 1) }
 const forward = () => { step.value = Math.min(total.value, step.value + 1) }
 const restart = () => { stop(); step.value = 0 }
 
 watch(order, () => { stop(); step.value = 0 })
+
+// Announce every step (screen readers, and spoken if "Read steps aloud" is on)
+const stepText = computed(() => {
+  const st = s.value
+  const what = isBfs.value ? 'Queue' : 'Stack'
+  return `Step ${step.value} of ${total.value}. ${st.message} ${what}: ${st.frontier.length ? st.frontier.join(', ') : 'empty'}. Visited so far: ${st.output.length ? st.output.join(', ') : 'none'}.`
+})
+watch([step, order], () => announce(stepText.value))
+
+function onKey(e: KeyboardEvent) {
+  if ((e.target as HTMLElement).closest('[role="tablist"]')) return
+  if (e.key === 'ArrowRight') { e.preventDefault(); forward() }
+  else if (e.key === 'ArrowLeft') { e.preventDefault(); back() }
+  else if (e.key === ' ' && (e.target as HTMLElement).tagName !== 'BUTTON') { e.preventDefault(); togglePlay() }
+}
 onBeforeUnmount(stop)
 </script>
 
 <template>
-  <div class="rounded-2xl border border-tq-line bg-white overflow-hidden">
-    <v-tabs v-model="order" color="primary-darken-1" class="border-b border-tq-line px-3">
+  <section class="rounded-2xl border border-tq-line bg-white overflow-hidden" aria-label="Traversal stepper" @keydown="onKey">
+    <v-tabs v-model="order" color="primary-darken-1" class="border-b border-tq-line px-3" aria-label="Choose a traversal">
       <v-tab v-for="t in tabs" :key="t.value" :value="t.value">{{ t.label }}</v-tab>
     </v-tabs>
 
@@ -58,7 +74,8 @@ onBeforeUnmount(stop)
           :current="s.current"
           :frontier="s.frontier"
           :visited="s.output"
-          label="Traversal tree"
+          :frontier-word="isBfs ? 'waiting in the queue' : 'on the call stack'"
+          :label="`Traversal tree, step ${step} of ${total}.`"
         />
       </div>
 
@@ -87,25 +104,26 @@ onBeforeUnmount(stop)
 
         <div>
           <div class="text-sm font-medium mb-2">Pseudocode</div>
-          <div class="font-mono text-[13px] leading-relaxed rounded-lg bg-tq-bg py-1.5 overflow-x-auto">
+          <div class="font-mono text-[13px] leading-relaxed rounded-lg bg-tq-bg py-1.5 overflow-x-auto" tabindex="0" role="region" :aria-label="`Pseudocode, line ${s.line} highlighted`">
             <div
               v-for="(line, i) in code"
               :key="i"
               class="whitespace-pre px-3"
-              :class="i + 1 === s.line ? 'bg-tq-yellow-light font-medium shadow-[inset_3px_0_0_#F2B807]' : ''"
+              :class="i + 1 === s.line ? 'bg-tq-yellow-light font-medium shadow-[inset_4px_0_0_#1F1A0A]' : ''"
+              :aria-current="i + 1 === s.line ? 'step' : undefined"
             ><span class="inline-block w-5 text-tq-muted">{{ i + 1 }}</span>{{ line }}</div>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="mx-5 px-4 py-3.5 rounded-xl bg-tq-yellow-light text-[15px] leading-normal" aria-live="polite">
+    <div class="mx-5 px-4 py-3.5 rounded-xl bg-tq-yellow-light text-[15px] leading-normal">
       {{ s.message }}
     </div>
 
     <div class="flex flex-wrap items-center gap-1.5 px-4 py-4">
       <v-btn icon="mdi-restart" variant="text" aria-label="Restart" :disabled="step === 0" @click="restart" />
-      <v-btn icon="mdi-skip-previous" variant="text" aria-label="Step back" :disabled="step === 0" @click="back" />
+      <v-btn icon="mdi-skip-previous" variant="text" aria-label="Step back" aria-keyshortcuts="ArrowLeft" :disabled="step === 0" @click="back" />
       <v-btn
         :icon="playing ? 'mdi-pause' : 'mdi-play'"
         color="primary"
@@ -113,8 +131,9 @@ onBeforeUnmount(stop)
         :aria-label="playing ? 'Pause' : 'Play'"
         @click="togglePlay"
       />
-      <v-btn icon="mdi-skip-next" variant="text" aria-label="Step forward" :disabled="step === total" @click="forward" />
+      <v-btn icon="mdi-skip-next" variant="text" aria-label="Step forward" aria-keyshortcuts="ArrowRight" :disabled="step === total" @click="forward" />
       <span class="ml-2 text-sm text-gray-700">Step {{ step }} of {{ total }}</span>
+      <span class="ml-auto text-xs text-tq-muted hidden sm:inline">Keys: ← → step, Space play</span>
     </div>
-  </div>
+  </section>
 </template>

@@ -24,3 +24,71 @@ html { scroll-behavior: smooth; }
 /* Rich text that comes from lessons.json (<strong>, <em>, <code>) */
 .rich strong { font-weight: 500; }
 .rich code { font-family: var(--font-mono); font-size: 0.92em; background: #FFF4C7; padding: 1px 5px; border-radius: 4px; }
+
+/* ===================== Accessibility ===================== */
+
+/* Skip link: hidden until it gets keyboard focus */
+.mf-skip { position: fixed; left: 12px; top: -100px; z-index: 3000; padding: 12px 18px; border-radius: 10px;
+  background: #1F1A0A; color: #fff; font-weight: 500; text-decoration: none; }
+.mf-skip:focus { top: 12px; outline: 3px solid #F2B807; outline-offset: 2px; }
+
+/* A clear focus ring on everything you can reach with Tab */
+:where(a, button, input, select, textarea, summary, [tabindex]:not([tabindex="-1"])):focus-visible {
+  outline: 3px solid #1F1A0A !important;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px #F2B807 !important;
+}
+#main-content:focus, h1:focus { outline: none; box-shadow: none !important; }
+
+.mf-on-active { color: inherit; opacity: .85; }
+
+/* Text and tree size: scales the page content (not the app bar) */
+html.mf-text-1 .mf-zoom { zoom: 1.15; }
+html.mf-text-2 .mf-zoom { zoom: 1.3; }
+
+/* Reduce motion (also follows the operating-system setting) */
+html.mf-reduce-motion *, html.mf-reduce-motion *::before, html.mf-reduce-motion *::after {
+  animation-duration: 0.01ms !important; animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important; scroll-behavior: auto !important;
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+/* High contrast: the theme colours become black on white, with thick borders */
+html.mf-contrast {
+  --color-tq-ink: #000000;
+  --color-tq-muted: #000000;
+  --color-tq-line: #000000;
+  --color-tq-bg: #FFFFFF;
+  --color-tq-gold: #000000;
+  --color-tq-yellow-light: #FFF0A0;
+  --color-tq-blue: #003C8F;
+  --color-tq-blue-light: #FFFFFF;
+  --v-theme-background: 255, 255, 255;
+  --v-theme-primary-darken-1: 0, 0, 0;
+  --v-theme-on-surface: 0, 0, 0;
+  --v-medium-emphasis-opacity: 1;
+  --v-high-emphasis-opacity: 1;
+  --v-border-opacity: 1;
+}
+html.mf-contrast body, html.mf-contrast .v-main { background: #fff !important; color: #000; }
+html.mf-contrast .v-main * { color: #000 !important; text-shadow: none !important; }
+html.mf-contrast .v-main .v-card,
+html.mf-contrast .v-main .border,
+html.mf-contrast .v-main [class*="border-"] { border-color: #000 !important; }
+html.mf-contrast .v-main .v-card { border-width: 2px !important; }
+html.mf-contrast .v-main [class*="bg-[#"] { background-color: #fff !important; }
+html.mf-contrast .v-main a { text-decoration: underline !important; }
+html.mf-contrast .v-main .v-btn--variant-outlined,
+html.mf-contrast .v-main .v-btn--variant-text,
+html.mf-contrast .v-main .v-btn--variant-tonal { border: 2px solid #000 !important; }
+html.mf-contrast .v-main .v-btn--variant-flat.bg-primary,
+html.mf-contrast .v-main .v-btn.bg-primary { background: #000 !important; }
+html.mf-contrast .v-main .v-btn.bg-primary * { color: #fff !important; }
+html.mf-contrast .v-main .mf-node--wrong, html.mf-contrast .v-main .mf-node--wrong * { color: #fff !important; }
+html.mf-contrast .v-main .mf-node { border-color: #000 !important; border-width: 3px !important; }
+html.mf-contrast .v-main .mf-node--frontier { border-style: dashed !important; }
+html.mf-contrast .v-main .mf-node--current { box-shadow: 0 0 0 4px #fff, 0 0 0 8px #000 !important; }
+html.mf-contrast .v-main .mf-edge { stroke: #000 !important; }
+html.mf-contrast .v-main .v-alert { border: 2px solid #000 !important; background: #fff !important; }
+html.mf-contrast .v-main .v-progress-linear__determinate { background: #000 !important; }
+html.mf-contrast .v-main .mf-node--dim { background: #fff !important; border-style: dotted !important; }

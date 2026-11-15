@@ -19,6 +19,7 @@ export type Block =
   | { type: 'code'; text: string }
   | { type: 'bst-search'; values: number[]; target?: number }
   | { type: 'traversal-stepper'; values: number[] }
+  | { type: 'video'; title: string; src: string; captions: string; poster?: string; minutes?: number; transcript: string[] }
 
 export interface Section {
   id: string

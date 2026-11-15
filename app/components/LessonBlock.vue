@@ -48,4 +48,6 @@ defineProps<{ block: Block }>()
   <BstSearch v-else-if="block.type === 'bst-search'" :values="block.values" :target="block.target" />
 
   <TraversalStepper v-else-if="block.type === 'traversal-stepper'" :values="block.values" />
+
+  <VideoBlock v-else-if="block.type === 'video'" :block="block" />
 </template>

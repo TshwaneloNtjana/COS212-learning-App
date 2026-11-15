@@ -153,3 +153,40 @@ export function traceTraversal(values: number[], order: Order): TraceStep[] {
 export function traversalOrder(values: number[], order: Order): number[] {
   return traceTraversal(values, order).at(-1)?.output ?? []
 }
+
+export interface TreeFact {
+  value: number
+  parent: number | null
+  side: 'left' | 'right' | null
+  left: number | null
+  right: number | null
+  depth: number
+}
+
+/** One fact per node, in level order (root first). Used for text descriptions. */
+export function treeFacts(values: number[]): TreeFact[] {
+  const root = buildBst(values)
+  const out: TreeFact[] = []
+  if (!root) return out
+  const queue: { n: BstNode, parent: number | null, side: 'left' | 'right' | null }[] = [{ n: root, parent: null, side: null }]
+  while (queue.length) {
+    const { n, parent, side } = queue.shift()!
+    out.push({ value: n.value, parent, side, left: n.left?.value ?? null, right: n.right?.value ?? null, depth: n.depth })
+    if (n.left) queue.push({ n: n.left, parent: n.value, side: 'left' })
+    if (n.right) queue.push({ n: n.right, parent: n.value, side: 'right' })
+  }
+  return out
+}
+
+/** Plain-English sentence describing where a node sits, e.g. "left child of 50, level 1". */
+export function describeNode(f: TreeFact): string {
+  const where = f.parent === null ? 'the root' : `${f.side} child of ${f.parent}`
+  const kids = [f.left !== null ? `left child ${f.left}` : '', f.right !== null ? `right child ${f.right}` : ''].filter(Boolean)
+  return `${where}, level ${f.depth}, ${kids.length ? kids.join(' and ') : 'a leaf (no children)'}`
+}
+
+/** Path from the root to where `value` would be inserted (empty if already in the tree). */
+export function insertPath(values: number[], value: number) {
+  const r = searchBst(values, value)
+  return r.found ? null : r.steps
+}

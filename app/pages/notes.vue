@@ -1,6 +1,6 @@
 <!-- Notes for class: questions to ask or bring up in the lecture. -->
 <script setup lang="ts">
-useHead({ title: 'Notes · MainFrame' })
+useHead({ title: 'Notes · Mainframe' })
 
 const route = useRoute()
 const { lessons } = useContent()
@@ -39,11 +39,11 @@ async function copy() {
 }
 
 function download() {
-  const blob = new Blob([`MainFrame: questions for class\n\n${asText()}\n`], { type: 'text/plain' })
+  const blob = new Blob([`Mainframe: questions for class\n\n${asText()}\n`], { type: 'text/plain' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = 'MainFrame-questions.txt'
+  a.download = 'mainframe-questions.txt'
   a.click()
   URL.revokeObjectURL(url)
 }
@@ -74,7 +74,7 @@ function download() {
           ref="textarea"
           v-model="draft"
           label="What do you want to ask or bring up?"
-          placeholder="e.g. Why does in-order give sorted output?"
+          placeholder="e.g. Why does BFS need a queue?"
           variant="outlined"
           rows="3"
           auto-grow

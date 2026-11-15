@@ -1,4 +1,4 @@
-// Pure tree logic: building, laying out, searching and traversing a BST.
+// Pure tree logic: building, laying out, searching and breadth-first traversal of a BST.
 // No Vue here, so it is easy to unit-test.
 
 export interface BstNode {
@@ -25,39 +25,66 @@ export function buildBst(values: number[]): BstNode | null {
 export interface LaidNode { value: number; x: number; y: number; depth: number }
 export interface LaidEdge { key: string; from: number; to: number; x1: number; y1: number; x2: number; y2: number }
 
-/** Positions nodes for drawing: x by in-order rank, y by depth. */
+/** All nodes in level order (uses a queue, like BFS). */
+function levelOrder(root: BstNode | null): BstNode[] {
+  const out: BstNode[] = []
+  const queue = root ? [root] : []
+  while (queue.length) {
+    const n = queue.shift()!
+    out.push(n)
+    if (n.left) queue.push(n.left)
+    if (n.right) queue.push(n.right)
+  }
+  return out
+}
+
+/** Positions nodes for drawing: x by value rank (smallest on the left), y by depth. */
 export function layoutTree(values: number[], width = 480, levelGap = 84, pad = 32) {
   const root = buildBst(values)
-  const inOrder: BstNode[] = []
-  const walk = (n: BstNode | null) => {
-    if (!n) return
-    walk(n.left)
-    inOrder.push(n)
-    walk(n.right)
-  }
-  walk(root)
+  const nodes = levelOrder(root)
+  // In a BST, left-to-right position is simply the order of the values.
+  const ranked = [...nodes].sort((a, b) => a.value - b.value)
 
-  const count = inOrder.length
+  const count = ranked.length
   const stepX = count > 1 ? (width - 2 * pad) / (count - 1) : 0
   const pos = new Map<number, LaidNode>()
-  inOrder.forEach((n, i) => {
+  ranked.forEach((n, i) => {
     pos.set(n.value, { value: n.value, x: count > 1 ? pad + i * stepX : width / 2, y: pad + n.depth * levelGap, depth: n.depth })
   })
 
   const edges: LaidEdge[] = []
-  const addEdges = (n: BstNode) => {
+  for (const n of nodes) {
     for (const c of [n.left, n.right]) {
       if (!c) continue
       const a = pos.get(n.value)!
       const b = pos.get(c.value)!
       edges.push({ key: `${n.value}-${c.value}`, from: n.value, to: c.value, x1: a.x, y1: a.y, x2: b.x, y2: b.y })
-      addEdges(c)
     }
   }
-  if (root) addEdges(root)
 
-  const maxDepth = Math.max(0, ...inOrder.map(n => n.depth))
+  const maxDepth = Math.max(0, ...nodes.map(n => n.depth))
   return { nodes: [...pos.values()], edges, width, height: pad * 2 + maxDepth * levelGap }
+}
+
+/** Height in edges (an empty tree or a single node has height 0). */
+export function treeHeight(values: number[]) {
+  return Math.max(0, ...levelOrder(buildBst(values)).map(n => n.depth))
+}
+
+/** Values of the nodes with no children. */
+export function leafValues(values: number[]) {
+  return levelOrder(buildBst(values)).filter(n => !n.left && !n.right).map(n => n.value)
+}
+
+/** Path from the root to the smallest ('min', keep going left) or largest ('max', keep going right) value. */
+export function extremePath(values: number[], which: 'min' | 'max') {
+  const path: number[] = []
+  let n = buildBst(values)
+  while (n) {
+    path.push(n.value)
+    n = which === 'min' ? n.left : n.right
+  }
+  return path
 }
 
 export interface SearchStep { value: number; result: 'left' | 'right' | 'found' }
@@ -78,78 +105,46 @@ export function searchBst(values: number[], target: number) {
   return { steps, found: false }
 }
 
-export type Order = 'bfs' | 'pre' | 'in' | 'post'
-
 export interface TraceStep {
   current: number | null
-  frontier: number[] // queue (BFS) or call stack (DFS), front/bottom first
+  queue: number[] // front first
   output: number[]
   line: number // pseudocode line to highlight, 1-based
   message: string
 }
 
-export const PSEUDOCODE: Record<Order, string[]> = {
-  bfs: [
-    'queue ← [root]',
-    'while queue is not empty:',
-    '  node ← queue.dequeue()',
-    '  visit(node)',
-    '  enqueue node.left, node.right (if they exist)',
-  ],
-  pre: ['dfs(node):', '  if node is null: return', '  visit(node)', '  dfs(node.left)', '  dfs(node.right)'],
-  in: ['dfs(node):', '  if node is null: return', '  dfs(node.left)', '  visit(node)', '  dfs(node.right)'],
-  post: ['dfs(node):', '  if node is null: return', '  dfs(node.left)', '  dfs(node.right)', '  visit(node)'],
-}
+export const BFS_PSEUDOCODE = [
+  'queue ← [root]',
+  'while queue is not empty:',
+  '  node ← queue.dequeue()',
+  '  visit(node)',
+  '  enqueue node.left, node.right (if they exist)',
+]
 
-/** Step-by-step trace of a traversal, for the stepper. */
-export function traceTraversal(values: number[], order: Order): TraceStep[] {
+/** Step-by-step trace of breadth-first search, for the stepper. */
+export function traceBfs(values: number[]): TraceStep[] {
   const root = buildBst(values)
   const steps: TraceStep[] = []
   if (!root) return steps
 
-  if (order === 'bfs') {
-    const queue: BstNode[] = [root]
-    const out: number[] = []
-    steps.push({ current: null, frontier: [root.value], output: [], line: 1, message: `Start: the root, ${root.value}, joins the queue.` })
-    while (queue.length) {
-      const n = queue.shift()!
-      out.push(n.value)
-      const kids = [n.left, n.right].filter((k): k is BstNode => k !== null)
-      queue.push(...kids)
-      const joined = kids.length
-        ? `${kids.map(k => k.value).join(' and ')} ${kids.length === 1 ? 'joins' : 'join'} the back.`
-        : 'It has no children.'
-      steps.push({ current: n.value, frontier: queue.map(k => k.value), output: [...out], line: 4, message: `${n.value} leaves the front of the queue and is visited. ${joined}` })
-    }
-  } else {
-    const visitLine = { pre: 3, in: 4, post: 5 }[order]
-    const why = {
-      pre: (v: number) => `Visit ${v} first, before its subtrees.`,
-      in: (v: number) => `${v}'s left side is done, so visit ${v}, then go right.`,
-      post: (v: number) => `Both subtrees of ${v} are done, so visit ${v} last.`,
-    }[order]
-    const out: number[] = []
-    steps.push({ current: null, frontier: [], output: [], line: 1, message: `Start: call dfs(${root.value}). Each call goes on the stack.` })
-    const rec = (n: BstNode, path: number[]) => {
-      const stack = [...path, n.value]
-      const visit = () => {
-        out.push(n.value)
-        steps.push({ current: n.value, frontier: stack, output: [...out], line: visitLine, message: why(n.value) })
-      }
-      if (order === 'pre') visit()
-      if (n.left) rec(n.left, stack)
-      if (order === 'in') visit()
-      if (n.right) rec(n.right, stack)
-      if (order === 'post') visit()
-    }
-    rec(root, [])
+  const queue: BstNode[] = [root]
+  const out: number[] = []
+  steps.push({ current: null, queue: [root.value], output: [], line: 1, message: `Start: the root, ${root.value}, joins the queue.` })
+  while (queue.length) {
+    const n = queue.shift()!
+    out.push(n.value)
+    const kids = [n.left, n.right].filter((k): k is BstNode => k !== null)
+    queue.push(...kids)
+    const joined = kids.length
+      ? `${kids.map(k => k.value).join(' and ')} ${kids.length === 1 ? 'joins' : 'join'} the back.`
+      : 'It has no children, so nothing joins the queue.'
+    steps.push({ current: n.value, queue: queue.map(k => k.value), output: [...out], line: 4, message: `${n.value} leaves the front of the queue and is visited. ${joined}` })
   }
-
-  steps[steps.length - 1]!.message += ' Done: every node was visited once.'
+  steps[steps.length - 1]!.message += ' The queue is empty: every node was visited once.'
   return steps
 }
 
-/** Just the final visit order, e.g. for the summary cheat sheet. */
-export function traversalOrder(values: number[], order: Order): number[] {
-  return traceTraversal(values, order).at(-1)?.output ?? []
+/** Just the final BFS order, e.g. for the summary page. */
+export function bfsOrder(values: number[]): number[] {
+  return traceBfs(values).at(-1)?.output ?? []
 }

@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import type { Quiz } from '~/types/content'
 
-useHead({ title: 'Quizzes · MainFrame' })
+useHead({ title: 'Quizzes · Mainframe' })
 
 const { quizzes, lessonForQuiz } = useContent()
 const { attemptsFor, bestFor, isLocked, quizzesAttempted, averageBest, state } = useProgress()

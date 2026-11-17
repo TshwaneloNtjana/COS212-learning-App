@@ -167,7 +167,7 @@ The design rationale behind MainFrame is documented in two companion documents, 
 | Melisa Ledwaba | Developer | [@Melissa941](https://github.com/Melissa941) |
 | Tamsanqa Thwala | Developer | [@Tamsanqa743](https://github.com/Tamsanqa743) |
 | Matlotlo Maphalela | Developer | [@mjmaphalela](https://github.com/mjmaphalela) |
-| Lesedi Lebopa | Developer | [@username](https://github.com/) |
+| Lesedi Lebopa | Developer | [@llesedi724-spec](https://github.com/llesedi724-spec) |
 | Tshwanelo Ntjana | Developer | [@TshwaneloNtjana](https://github.com/TshwaneloNtjana) |
 
 ## 🤖 Use of generative AI
